@@ -4,13 +4,22 @@ import { Node } from '@/types/node';
 interface NodeCardProps {
   node: Node;
   onOpenDialog: (nodeId: string) => void;
+  isSelected?: boolean;
 }
 
-export default function NodeCard({ node, onOpenDialog }: NodeCardProps) {
+export default function NodeCard({ node, onOpenDialog, isSelected }: NodeCardProps) {
+  const handleClick = () => {
+    // 触发与 NodeMindMap 相同的事件
+    const customEvent = new CustomEvent('node-selected', { 
+      detail: { nodeId: node.id }
+    });
+    window.dispatchEvent(customEvent);
+  };
+
   return (
-    <div className="h-full aspect-[2.5/3.5] relative select-none">
-      <div className="fluent-card rounded-xl p-4 h-full
-                    flex flex-col bg-white/80">
+    <div className="h-full aspect-[2.5/3.5] relative select-none" onClick={handleClick}>
+      <div className={`fluent-card rounded-xl p-4 h-full flex flex-col bg-white/80
+                    ${isSelected ? 'ring-2 ring-blue-400 shadow-lg' : ''}`}>
         <div className="flex items-center justify-between mb-2">
           <span className="text-sm text-[var(--text-secondary)]">
             {node.sequence}

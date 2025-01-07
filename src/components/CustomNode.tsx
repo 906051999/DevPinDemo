@@ -1,8 +1,7 @@
 import { Handle, Position, useReactFlow } from 'reactflow';
 import { Node } from '@/types/node';
 import { useNodes } from '@/contexts/NodesContext';
-import { db } from '@/lib/db';
-import { calculateNodePosition } from '@/utils/layout';
+
 
 interface CustomNodeProps {
   data: { node: Node; label: string };
@@ -14,13 +13,7 @@ export default function CustomNode({ data }: CustomNodeProps) {
   
   const addNode = async (isChild: boolean) => {
     const parentSequence = isChild ? data.node.sequence : data.node.sequence.split('.').slice(0, -1).join('.');
-    const newNode = await createNode(parentSequence, isChild ? data.node.level + 1 : data.node.level);
-    
-    // 计算新节点位置并居中视图
-    setTimeout(() => {
-      const position = calculateNodePosition(newNode, nodes);
-      setCenter(position.x, position.y, { duration: 500, zoom: 1 });
-    }, 50);
+    await createNode(parentSequence, isChild ? data.node.level + 1 : data.node.level);
   };
 
   return (

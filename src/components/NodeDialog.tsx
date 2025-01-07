@@ -154,15 +154,6 @@ export default function NodeDialog({ nodeId, isOpen, onClose }: NodeDialogProps)
         <div className="absolute bottom-0 left-0 right-0 z-20
                       bg-white/70 backdrop-blur-md border-t border-white/30">
           <div className="px-6 py-4 flex justify-between">
-            {isEditing && (
-              <button 
-                onClick={() => setShowDeleteConfirm(true)}
-                className="fluent-button !bg-red-50 hover:!bg-red-100 text-red-600"
-              >
-                删除
-              </button>
-            )}
-            
             <div className="flex space-x-3">
               {isEditing ? (
                 <>
@@ -182,6 +173,15 @@ export default function NodeDialog({ nodeId, isOpen, onClose }: NodeDialogProps)
                 </button>
               )}
             </div>
+
+            {isEditing && (
+              <button 
+                onClick={() => setShowDeleteConfirm(true)}
+                className="fluent-button !bg-red-50 hover:!bg-red-100 text-red-600"
+              >
+                删除
+              </button>
+            )}
           </div>
         </div>
 

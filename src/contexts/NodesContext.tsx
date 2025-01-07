@@ -73,8 +73,12 @@ export function NodesProvider({ children }) {
   };
 
   useEffect(() => {
+    let mounted = true;
+
     const loadNodes = async () => {
       const data = await db.getAllNodes();
+      if (!mounted) return;
+      
       if (data.length === 0) {
         const root: Node = {
           id: uuidv4(),
@@ -91,7 +95,9 @@ export function NodesProvider({ children }) {
         setNodes(data);
       }
     };
+
     loadNodes();
+    return () => { mounted = false };
   }, []);
 
   return (
