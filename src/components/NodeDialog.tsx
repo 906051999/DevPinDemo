@@ -66,6 +66,7 @@ export default function NodeDialog({ nodeId, isOpen, onClose }: NodeDialogProps)
     if (!node) return;
     try {
       await deleteNode(node.id);
+      setShowDeleteConfirm(false);
       onClose();
     } catch (error) {
       console.error('Failed to delete node:', error);

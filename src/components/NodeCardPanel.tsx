@@ -15,6 +15,12 @@ export default function NodeCardPanel({ onOpenDialog }: NodeCardPanelProps) {
   const { nodes } = useNodes();
   const [swiper, setSwiper] = useState<SwiperType | null>(null);
   const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null);
+  const [currentIndex, setCurrentIndex] = useState<number>(0);
+
+  // 对nodes按更新时间排序
+  const sortedNodes = [...nodes].sort((a, b) => {
+    return new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime();
+  });
 
   useEffect(() => {
     const handleNodeSelected = (e: CustomEvent<{ nodeId: string }>) => {
@@ -25,19 +31,26 @@ export default function NodeCardPanel({ onOpenDialog }: NodeCardPanelProps) {
       
       const index = nodes.findIndex(n => n.id === nodeId);
       if (index === -1) return;
-
-      // 计算目标滚动位置
-      const slideWidth = 250; // slide 宽度
-      const containerWidth = swiper.el.clientWidth;
-      const targetOffset = index * slideWidth;
-      const centeredOffset = (containerWidth - slideWidth) / 2;
       
-      swiper.slideTo(index, 300, false);
+      setCurrentIndex(index);
     };
 
     window.addEventListener('node-selected', handleNodeSelected as EventListener);
     return () => window.removeEventListener('node-selected', handleNodeSelected as EventListener);
   }, [nodes, swiper]);
+
+  // 监听 selectedNodeId 变化，自动滚动到对应位置
+  useEffect(() => {
+    if (!swiper || !selectedNodeId ) return;
+    
+    const index = sortedNodes.findIndex(n => n.id === selectedNodeId);
+    if (index !== -1) {
+      swiper.slideTo(index, 500, false);
+      if (index == currentIndex) {
+        return;
+      }
+    }
+  }, [selectedNodeId, swiper, sortedNodes]);
 
   return (
     <div className="h-full">
@@ -46,6 +59,9 @@ export default function NodeCardPanel({ onOpenDialog }: NodeCardPanelProps) {
         modules={[FreeMode, Mousewheel]}
         slidesPerView="auto"
         spaceBetween={16}
+        centeredSlides={true}
+        centeredSlidesBounds={true}
+        slideToClickedSlide={true}
         mousewheel={{
           forceToAxis: true,
         }}
@@ -57,7 +73,7 @@ export default function NodeCardPanel({ onOpenDialog }: NodeCardPanelProps) {
         watchSlidesProgress={true}
         className="h-full py-4 px-4"
       >
-        {nodes.map((node) => (
+        {sortedNodes.map((node) => (
           <SwiperSlide 
             key={node.id} 
             className="!w-[250px] transition-transform"

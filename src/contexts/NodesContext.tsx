@@ -9,6 +9,7 @@ interface NodesContextType {
   nodes: Node[];
   setNodes: (nodes: Node[]) => void;
   createNode: (parentSequence: string, level: number) => Promise<Node>;
+  createGenerateNode: (parentSequence: string, level: number, nodeData: Partial<Node>) => Promise<Node>;
   updateNode: (nodeId: string, updates: Partial<Node>) => Promise<void>;
   deleteNode: (nodeId: string) => Promise<void>;
 }
@@ -28,8 +29,42 @@ export function NodesProvider({ children }) {
       id: uuidv4(),
       sequence: `${parentSequence}.${siblingNodes.length + 1}`,
       level,
-      title: '新节点',
+      title: '节点' + `${parentSequence}.${siblingNodes.length + 1}`,
       content: '',
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+      generateTitle: '',
+      generateContent: ''
+    };
+
+    await db.saveNode(newNode);
+    setNodes([...nodes, newNode]);
+
+    // 触发选中新节点事件
+    setTimeout(() => {
+      const customEvent = new CustomEvent('node-selected', { 
+        detail: { nodeId: newNode.id }
+      });
+      window.dispatchEvent(customEvent);
+    }, 100);
+
+    return newNode;
+  };
+
+  const createGenerateNode = async (parentSequence: string, level: number, nodeData: Partial<Node>) => {
+    const siblingNodes = nodes.filter(n => 
+      n.sequence.startsWith(parentSequence + '.') 
+      && n.sequence.split('.').length === level + 1
+    );
+    
+    const newNode: Node = {
+      id: uuidv4(),
+      sequence: nodeData.sequence || `${parentSequence}.${siblingNodes.length + 1}`,
+      level,
+      title: nodeData.title || '节点' + `${parentSequence}.${siblingNodes.length + 1}`,
+      content: nodeData.content || '',
+      generateTitle: nodeData.generateTitle || '',
+      generateContent: nodeData.generateContent || '',
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString()
     };
@@ -37,7 +72,6 @@ export function NodesProvider({ children }) {
     await db.saveNode(newNode);
     setNodes([...nodes, newNode]);
 
-    // 触发选中新节点事件
     setTimeout(() => {
       const customEvent = new CustomEvent('node-selected', { 
         detail: { nodeId: newNode.id }
@@ -93,10 +127,12 @@ export function NodesProvider({ children }) {
           id: uuidv4(),
           sequence: '1',
           level: 0,
-          title: 'Root',
-          content: '',
+          title: '根节点',
+          content: '这是一个根节点',
           createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString()
+          updatedAt: new Date().toISOString(),
+          generateTitle: '',
+          generateContent: ''
         };
         await db.saveNode(root);
         setNodes([root]);
@@ -110,7 +146,14 @@ export function NodesProvider({ children }) {
   }, []);
 
   return (
-    <NodesContext.Provider value={{ nodes, setNodes, createNode, updateNode, deleteNode }}>
+    <NodesContext.Provider value={{ 
+      nodes, 
+      setNodes, 
+      createNode, 
+      createGenerateNode,
+      updateNode, 
+      deleteNode 
+    }}>
       {children}
     </NodesContext.Provider>
   );
