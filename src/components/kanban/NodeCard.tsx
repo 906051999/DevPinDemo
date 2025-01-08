@@ -16,14 +16,21 @@ export default function NodeCard({
   node, 
   onOpenDialog, 
   isSelected,
+
 }: NodeCardProps) {
   const router = useRouter();
   const chatCount = node.chatHistory?.length || 0;
   const hasChat = chatCount > 0;
 
-  const handleChatClick = (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
+  const handleClick = () => {
+    // 触发与 NodeMindMap 相同的事件
+    const customEvent = new CustomEvent('node-selected', { 
+      detail: { nodeId: node.id }
+    });
+    window.dispatchEvent(customEvent);
+  };
+
+  const handleChatClick = () => {
     // 跳转到聊天页面，并传递节点信息
     router.push(`/chat?nodeId=${node.id}`);
   };
@@ -38,7 +45,7 @@ export default function NodeCard({
         base: isSelected ? 'border-2 border-primary-300 shadow-medium' : '',
         body: "py-2"
       }}
-      onPress={handleChatClick}
+      onPress={handleClick}
     >
       <CardHeader className="pb-0 pt-2 px-4 flex-col items-stretch">
         <div className="flex items-center justify-between">
