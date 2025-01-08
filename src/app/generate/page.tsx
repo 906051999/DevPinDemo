@@ -53,6 +53,8 @@ export default function ExportPage() {
       
       const newNodes = [];
       let index = 1;
+      const currentMaxNumber = Math.max(...nodes.map(n => n.number), -1);
+      
       for (const suggestion of result.nodes) {
         const siblingCount = nodes.filter(n => 
           n.sequence.startsWith(node.sequence + '.') &&
@@ -64,7 +66,8 @@ export default function ExportPage() {
           content: suggestion.description,
           generateTitle: suggestion.title,
           generateContent: suggestion.description,
-          sequence: `${node.sequence}.${siblingCount + index}`
+          sequence: `${node.sequence}.${siblingCount + index}`,
+          number: currentMaxNumber + index
         });
         newNodes.push(newNode);
         index++;

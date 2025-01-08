@@ -46,7 +46,7 @@ export default function NodeMindMap() {
     const flowNodes = nodes.map((node) => ({
       id: node.id,
       position: { x: 0, y: 0 },
-      data: { node, label: node.title },
+      data: { node, label: node.generateTitle || node.title },
       type: 'custom',
       draggable: true,
     }));
@@ -72,7 +72,7 @@ export default function NodeMindMap() {
     const flowNodes = nodes.map((node) => ({
       id: node.id,
       position: { x: 0, y: 0 },
-      data: { node, label: node.title },
+      data: { node, label: node.generateTitle || node.title },
       type: 'custom',
       draggable: true,
     }));

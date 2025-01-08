@@ -34,13 +34,14 @@ export function NodesProvider({ children }) {
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
       generateTitle: '',
-      generateContent: ''
+      generateContent: '',
+      number: nodes.length,
+      chatHistory: []
     };
 
     await db.saveNode(newNode);
     setNodes([...nodes, newNode]);
 
-    // 触发选中新节点事件
     setTimeout(() => {
       const customEvent = new CustomEvent('node-selected', { 
         detail: { nodeId: newNode.id }
@@ -66,7 +67,9 @@ export function NodesProvider({ children }) {
       generateTitle: nodeData.generateTitle || '',
       generateContent: nodeData.generateContent || '',
       createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString()
+      updatedAt: new Date().toISOString(),
+      number: nodeData.number ?? nodes.length,
+      chatHistory: []
     };
 
     await db.saveNode(newNode);
@@ -129,6 +132,8 @@ export function NodesProvider({ children }) {
           level: 0,
           title: '根节点',
           content: '这是一个根节点',
+          number: 0,
+          chatHistory: [],
           createdAt: new Date().toISOString(),
           updatedAt: new Date().toISOString(),
           generateTitle: '',

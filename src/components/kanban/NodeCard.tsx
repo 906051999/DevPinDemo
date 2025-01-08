@@ -2,6 +2,7 @@ import { Node } from '@/types/node';
 import { Card, CardBody, CardHeader, CardFooter } from "@nextui-org/react";
 import { formatDistanceToNow } from 'date-fns';
 import { zhCN } from 'date-fns/locale';
+import { useRouter } from 'next/navigation';
 
 interface NodeCardProps {
   node: Node;
@@ -15,15 +16,16 @@ export default function NodeCard({
   node, 
   onOpenDialog, 
   isSelected,
-  chatCount = 0,
-  hasUnread = false 
 }: NodeCardProps) {
-  const handleClick = () => {
-    // 触发与 NodeMindMap 相同的事件
-    const customEvent = new CustomEvent('node-selected', { 
-      detail: { nodeId: node.id }
-    });
-    window.dispatchEvent(customEvent);
+  const router = useRouter();
+  const chatCount = node.chatHistory?.length || 0;
+  const hasChat = chatCount > 0;
+
+  const handleChatClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    // 跳转到聊天页面，并传递节点信息
+    router.push(`/chat?nodeId=${node.id}`);
   };
 
   return (
@@ -36,11 +38,11 @@ export default function NodeCard({
         base: isSelected ? 'border-2 border-primary-300 shadow-medium' : '',
         body: "py-2"
       }}
-      onPress={handleClick}
+      onPress={handleChatClick}
     >
       <CardHeader className="pb-0 pt-2 px-4 flex-col items-stretch">
         <div className="flex items-center justify-between">
-          <span className="text-sm text-default-500">{node.sequence}</span>
+          <span className="text-sm text-default-500">{node.number}</span>
           <span className="text-[10px] bg-default-100 text-default-600 px-1.5 py-0.5 rounded-full truncate max-w-[120px]">
             {formatDistanceToNow(new Date(node.updatedAt), { 
               locale: zhCN, 
@@ -48,12 +50,12 @@ export default function NodeCard({
             })}
           </span>
         </div>
-        <h3 className="font-medium line-clamp-1 mt-1">{node.title}</h3>
+        <h3 className="font-medium line-clamp-1 mt-1">{node.generateTitle || node.title}</h3>
       </CardHeader>
       
       <CardBody>
         <p className="text-sm text-default-500 line-clamp-2">
-          {node.content}
+          {node.generateContent || node.content}
         </p>
       </CardBody>
 
@@ -62,12 +64,9 @@ export default function NodeCard({
           onPointerDown={(e) => {
             e.stopPropagation();
           }}
-          onClick={(e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            // TODO: 处理聊天事件
-          }}
-          className="flex items-center justify-center gap-1 py-1.5 rounded-lg hover:bg-default-100 transition-colors relative"
+          onClick={handleChatClick}
+          className={`flex items-center justify-center gap-1 py-1.5 rounded-lg transition-colors relative
+            ${hasChat ? 'text-primary-500 hover:bg-primary-50' : 'text-default-400 hover:bg-default-100'}`}
           aria-label="Chat"
         >
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -76,8 +75,9 @@ export default function NodeCard({
           </svg>
           <span className="text-xs">聊天</span>
           {chatCount > 0 && (
-            <span className={`absolute -top-1 -right-1 px-1.5 py-0.5 text-xs rounded-full 
-              ${hasUnread ? 'bg-primary text-white' : 'bg-default-100 text-default-600'}`}>
+            <span className="absolute -top-1 -right-1 min-w-[20px] h-5 px-1 
+              flex items-center justify-center text-xs rounded-full 
+              bg-primary-500 text-white font-medium">
               {chatCount}
             </span>
           )}
