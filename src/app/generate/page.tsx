@@ -10,6 +10,7 @@ import { AIResponseParser } from '@/lib/parser';
 import MarkdownPreview from '@uiw/react-markdown-preview';
 import { useTheme } from 'next-themes';
 import { NavbarComponent } from '@/components/Navbar';
+import { useRouter } from 'next/navigation';
 
 export default function ExportPage() {
   const { nodes, updateNode, deleteNode, createGenerateNode, setNodes } = useNodes();
@@ -18,6 +19,7 @@ export default function ExportPage() {
   const [splittingId, setSplittingId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const { theme, setTheme } = useTheme();
+  const router = useRouter();
 
   const handleAIOptimize = async (node: Node) => {
     setGeneratingId(node.id);
@@ -82,6 +84,11 @@ export default function ExportPage() {
     }
   };
 
+  const handleChatClick = (nodeId: string) => {
+    router.push('/chat');
+    document.cookie = `nodeId=${nodeId}; path=/`;
+  };
+
   const renderNode = (node: Node) => {
     const headingLevel = '#'.repeat(node.level + 1);
     const childNodes = nodes.filter(n => 
@@ -91,6 +98,9 @@ export default function ExportPage() {
 
     const isEditing = editingId === node.id;
     const hasAiContent = node.generateTitle || node.generateContent;
+
+    const chatCount = node.chatHistory?.length || 0;
+    const hasChat = chatCount > 0;
 
     return (
       <div key={node.id} className="p-4 m-4 border rounded-lg shadow-sm group">
@@ -161,6 +171,29 @@ export default function ExportPage() {
                   >
                     {splittingId === node.id ? 'AI 拆分中...' : 'AI 拆分'}
                   </Button>
+                  <div className="relative">
+                    <Button
+                      color="default"
+                      variant="flat"
+                      startContent={
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} 
+                            d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                        </svg>
+                      }
+                      onPress={() => handleChatClick(node.id)}
+                      className={hasChat ? 'text-primary-500 hover:bg-primary-50' : ''}
+                    >
+                      聊天
+                    </Button>
+                    {chatCount > 0 && (
+                      <span className="absolute -top-2 -right-2 min-w-[20px] h-5 px-1 
+                        flex items-center justify-center text-xs rounded-full 
+                        bg-primary-500 text-white font-medium">
+                        {chatCount}
+                      </span>
+                    )}
+                  </div>
                 </div>
 
                 <div className="flex gap-2">

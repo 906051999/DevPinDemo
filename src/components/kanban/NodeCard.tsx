@@ -31,8 +31,11 @@ export default function NodeCard({
   };
 
   const handleChatClick = () => {
-    // 跳转到聊天页面，并传递节点信息
-    router.push(`/chat?nodeId=${node.id}`);
+    // 直接跳转到聊天页面，cookie 会由中间件处理
+    router.push('/chat');
+    
+    // 设置 cookie
+    document.cookie = `nodeId=${node.id}; path=/`;
   };
 
   return (

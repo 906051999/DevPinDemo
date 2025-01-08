@@ -16,7 +16,6 @@ import { ChatMessage } from '@/types/message';
 import { Modal, ModalContent } from "@nextui-org/react";
 import '@chatui/core/dist/index.css';
 import './chatui-theme.css';
-import { useSearchParams } from 'next/navigation';
 
 // 动态导入 Chat 组件，禁用 SSR
 const Chat = dynamic(
@@ -31,7 +30,6 @@ const Bubble = dynamic(
 );
 
 export default function ChatPage() {
-  const searchParams = useSearchParams();
   const { nodes, updateNode } = useNodes();
   const [selectedProject, setSelectedProject] = useState<Node | null>(null);
   const [selectedTopic, setSelectedTopic] = useState<Node | null>(null);
@@ -70,13 +68,16 @@ export default function ChatPage() {
 
   // 处理 URL 参数，自动选择对应的节点
   useEffect(() => {
-    const nodeId = searchParams.get('nodeId');
+    const nodeId = document.cookie
+      .split('; ')
+      .find(row => row.startsWith('nodeId='))
+      ?.split('=')[1];
+
     if (!nodeId) return;
 
     const node = nodes.find(n => n.id === nodeId);
     if (!node) return;
 
-    // 如果是子节点，需要先找到其根节点
     const rootSequence = node.sequence.split('.')[0];
     const rootNode = nodes.find(n => n.sequence === rootSequence);
     
@@ -86,7 +87,7 @@ export default function ChatPage() {
         setSelectedTopic(node);
       }
     }
-  }, [searchParams, nodes]);
+  }, [nodes]);
 
   // 处理发送消息
   const handleSend = async (type: string, content: string) => {
