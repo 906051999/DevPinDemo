@@ -9,6 +9,7 @@ import { evaluateNode, splitNode, generateRoot } from '@/lib/api';
 import { AIResponseParser } from '@/lib/parser';
 import MarkdownPreview from '@uiw/react-markdown-preview';
 import { useTheme } from 'next-themes';
+import { NavbarComponent } from '@/components/Navbar';
 
 export default function ExportPage() {
   const { nodes, updateNode, deleteNode, createGenerateNode, setNodes } = useNodes();
@@ -222,7 +223,8 @@ export default function ExportPage() {
   const rootNode = nodes.find(n => n.level === 0);
 
   return (
-    <div className="container mx-auto py-8">
+    <div className="container mx-auto py-8 pt-16">
+        <NavbarComponent />
       {rootNode && renderNode(rootNode)}
     </div>
   );
