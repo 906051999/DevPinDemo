@@ -5,7 +5,7 @@ import { Node } from '@/types/node';
 import { Button, Input, Textarea } from '@nextui-org/react';
 import { useState } from 'react';
 import { Bot, Sparkles } from 'lucide-react';
-import { evaluateNode, splitNode, generateRoot } from '@/lib/api';
+import { splitNode, generateRoot } from '@/lib/api';
 import { AIResponseParser } from '@/lib/parser';
 import MarkdownPreview from '@uiw/react-markdown-preview';
 import { useTheme } from 'next-themes';

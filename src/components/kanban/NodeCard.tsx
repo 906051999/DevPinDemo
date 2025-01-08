@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { Node } from '@/types/node';
 import { Card, CardBody, CardHeader, CardFooter } from "@nextui-org/react";
 import { formatDistanceToNow } from 'date-fns';

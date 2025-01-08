@@ -5,7 +5,6 @@ import { useTheme } from 'next-themes';
 import { Button} from '@nextui-org/react';
 import { SunIcon, MoonIcon } from '@heroicons/react/24/outline';
 import { BotIcon, GitFork, MessageSquareMore } from 'lucide-react';
-import { NavbarComponent } from '@/components/Navbar';
 
 export default function Home() {
   const router = useRouter();

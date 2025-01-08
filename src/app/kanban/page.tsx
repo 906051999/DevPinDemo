@@ -2,18 +2,14 @@
 
 import { ReactFlowProvider } from 'reactflow';
 import { useState } from 'react';
-import { useTheme } from 'next-themes';
-import { Button } from '@nextui-org/react';
-import { SunIcon, MoonIcon } from '@heroicons/react/24/outline';
-import NodeMindMap from '@/components/NodeMindMap';
-import NodeCardPanel from '@/components/NodeCardPanel';
-import NodeDialog from '@/components/NodeDialog';
+import NodeMindMap from '@/components/kanban/NodeMindMap';
+import NodeCardPanel from '@/components/kanban/NodeCardPanel';
+import NodeDialog from '@/components/kanban/NodeDialog';
 import { NodesProvider } from '@/contexts/NodesContext';
 import { NavbarComponent } from '@/components/Navbar';
 
 export default function Home() {
   const [dialogNodeId, setDialogNodeId] = useState<string | null>(null);
-  const { theme, setTheme } = useTheme();
 
   const handleOpenDialog = (nodeId: string) => {
     setDialogNodeId(nodeId);
