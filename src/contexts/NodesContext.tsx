@@ -36,6 +36,15 @@ export function NodesProvider({ children }) {
 
     await db.saveNode(newNode);
     setNodes([...nodes, newNode]);
+
+    // 触发选中新节点事件
+    setTimeout(() => {
+      const customEvent = new CustomEvent('node-selected', { 
+        detail: { nodeId: newNode.id }
+      });
+      window.dispatchEvent(customEvent);
+    }, 100);
+
     return newNode;
   };
 

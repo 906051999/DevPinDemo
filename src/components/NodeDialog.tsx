@@ -1,10 +1,21 @@
 import { useState, useEffect } from 'react';
+import { 
+  Modal, 
+  ModalContent, 
+  ModalHeader, 
+  ModalBody, 
+  ModalFooter,
+  Button,
+  Input,
+  Textarea,
+  Divider
+} from '@nextui-org/react';
+import { motion } from 'framer-motion';
 import { Node } from '@/types/node';
-import { db } from '@/lib/db';
 import { useNodes } from '@/contexts/NodesContext';
 
 interface NodeDialogProps {
-  nodeId: string;
+  nodeId: string | null;
   isOpen: boolean;
   onClose: () => void;
 }
@@ -41,7 +52,6 @@ export default function NodeDialog({ nodeId, isOpen, onClose }: NodeDialogProps)
       setIsEditing(false);
     } catch (error) {
       console.error('Failed to save node:', error);
-      // 这里可以添加错误提示
     }
   };
 
@@ -62,156 +72,180 @@ export default function NodeDialog({ nodeId, isOpen, onClose }: NodeDialogProps)
     }
   };
 
-  if (!isOpen || !node) return null;
+  if (!node) return null;
 
   return (
-    <div className={`fixed inset-0 flex items-center justify-center z-50
-                    transition-all duration-300 ${isOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
-      <div className="absolute inset-0 bg-white/20 backdrop-blur-sm" 
-           onClick={onClose} />
-      
-      <div className="relative w-full max-w-[min(90vw,800px)] h-full max-h-[min(90vh,600px)] m-4
-                    rounded-xl overflow-hidden bg-white/80 backdrop-blur-2xl
-                    border border-white/40 shadow-[0_8px_32px_rgba(0,0,0,0.1)]">
-        <div className="absolute top-0 left-0 right-0 z-20 
-                      bg-white/70 backdrop-blur-md border-b border-white/30">
-          <div className="px-6 py-4 flex justify-between items-center">
-            <h2 className="text-xl font-semibold">节点详情</h2>
-            <button onClick={onClose} 
-                    className="p-2 rounded-full hover:bg-white/60 transition-colors">
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} 
-                      d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            </button>
-          </div>
-        </div>
+    <>
+      <Modal 
+        isOpen={isOpen} 
+        onClose={onClose}
+        size="2xl"
+        scrollBehavior="inside"
+        backdrop="blur"
+        classNames={{
+          backdrop: "bg-background/50 backdrop-blur-md",
+          base: "border border-divider bg-background/80",
+          header: "border-b border-divider",
+          footer: "border-t border-divider",
+          closeButton: "hover:bg-foreground/10",
+        }}
+      >
+        <ModalContent>
+          {(onClose) => (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 20 }}
+            >
+              <ModalHeader className="flex flex-col gap-1">
+                节点详情
+              </ModalHeader>
+              <ModalBody>
+                <div className="space-y-6">
+                  <div className="space-y-2">
+                    <Input
+                      label="标题"
+                      value={isEditing ? title : node.title}
+                      onChange={(e) => setTitle(e.target.value)}
+                      isReadOnly={!isEditing}
+                      variant="bordered"
+                    />
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Textarea
+                      label="内容"
+                      value={isEditing ? content : node.content}
+                      onChange={(e) => setContent(e.target.value)}
+                      isReadOnly={!isEditing}
+                      variant="bordered"
+                      minRows={4}
+                    />
+                  </div>
 
-        <div className="absolute inset-0 pt-[65px] pb-[73px] overflow-y-auto">
-          <div className="p-6 space-y-6">
-
-            <div className="space-y-2">
-              <label className="block text-sm text-[var(--text-secondary)]">标题</label>
-              {isEditing ? (
-                <input
-                  type="text"
-                  value={title}
-                  onChange={(e) => setTitle(e.target.value)}
-                  className="w-full px-4 py-2 rounded-lg bg-white/60 border border-white/40
-                           focus:outline-none focus:ring-2 focus:ring-blue-400/30"
-                />
-              ) : (
-                <div className="px-4 py-2 rounded-lg bg-white/40">{node.title}</div>
-              )}
-            </div>
-            <div className="space-y-2">
-              <label className="block text-sm text-[var(--text-secondary)]">内容</label>
-              {isEditing ? (
-                <textarea
-                  value={content}
-                  onChange={(e) => setContent(e.target.value)}
-                  rows={4}
-                  className="w-full px-4 py-2 rounded-lg bg-white/60 border border-white/40
-                           focus:outline-none focus:ring-2 focus:ring-blue-400/30"
-                />
-              ) : (
-                <div className="px-4 py-2 rounded-lg bg-white/40 whitespace-pre-wrap">
-                  {node.content}
+                  <Divider />
+                  
+                  <div className="grid grid-cols-2 gap-4">
+                    <Input
+                      label="序号"
+                      value={node.sequence}
+                      isReadOnly
+                      variant="bordered"
+                    />
+                    <Input
+                      label="级别"
+                      value={node.level.toString()}
+                      isReadOnly
+                      variant="bordered"
+                    />
+                    <Input
+                      label="创建时间"
+                      value={new Date(node.createdAt).toLocaleString()}
+                      isReadOnly
+                      variant="bordered"
+                    />
+                    <Input
+                      label="更新时间"
+                      value={new Date(node.updatedAt).toLocaleString()}
+                      isReadOnly
+                      variant="bordered"
+                    />
+                  </div>
+                  
+                  <Input
+                    label="UUID"
+                    value={node.id}
+                    isReadOnly
+                    variant="bordered"
+                  />
                 </div>
-              )}
-            </div>
-
-
-            <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <label className="block text-sm text-[var(--text-secondary)]">序号</label>
-              <div className="px-4 py-2 rounded-lg bg-white/40">{node.sequence}</div>
-            </div>
-            <div className="space-y-2">
-              <label className="block text-sm text-[var(--text-secondary)]">级别</label>
-              <div className="px-4 py-2 rounded-lg bg-white/40">{node.level}</div>
-            </div>
-              <div>
-                <label className="block text-sm text-[var(--text-secondary)]">创建时间</label>
-                <div className="px-4 py-2 rounded-lg bg-white/40">
-                  {new Date(node.createdAt).toLocaleString()}
+              </ModalBody>
+              <ModalFooter>
+                <div className="flex justify-between w-full">
+                  <div className="flex gap-2">
+                    {isEditing ? (
+                      <>
+                        <Button
+                          color="default"
+                          variant="light"
+                          onPress={handleCancel}
+                        >
+                          取消
+                        </Button>
+                        <Button
+                          color="primary"
+                          onPress={handleSave}
+                        >
+                          保存
+                        </Button>
+                      </>
+                    ) : (
+                      <Button
+                        color="primary"
+                        onPress={() => setIsEditing(true)}
+                      >
+                        编辑
+                      </Button>
+                    )}
+                  </div>
+                  {isEditing && (
+                    <Button
+                      color="danger"
+                      variant="flat"
+                      onPress={() => setShowDeleteConfirm(true)}
+                    >
+                      删除
+                    </Button>
+                  )}
                 </div>
-              </div>
-              <div>
-                <label className="block text-sm text-[var(--text-secondary)]">更新时间</label>
-                <div className="px-4 py-2 rounded-lg bg-white/40">
-                  {new Date(node.updatedAt).toLocaleString()}
-                </div>
-              </div>
-            </div>
-            <div className="space-y-2">
-              <label className="block text-sm text-[var(--text-secondary)]">UUID</label>
-              <div className="px-4 py-2 rounded-lg bg-white/40">{node.id}</div>
-            </div>
-          </div>
-        </div>
+              </ModalFooter>
+            </motion.div>
+          )}
+        </ModalContent>
+      </Modal>
 
-        <div className="absolute bottom-0 left-0 right-0 z-20
-                      bg-white/70 backdrop-blur-md border-t border-white/30">
-          <div className="px-6 py-4 flex justify-between">
-            <div className="flex space-x-3">
-              {isEditing ? (
-                <>
-                  <button onClick={handleCancel} 
-                          className="fluent-button">
-                    取消
-                  </button>
-                  <button onClick={handleSave} 
-                          className="fluent-primary-button">
-                    保存
-                  </button>
-                </>
-              ) : (
-                <button onClick={() => setIsEditing(true)} 
-                        className="fluent-primary-button">
-                  编辑
-                </button>
-              )}
-            </div>
-
-            {isEditing && (
-              <button 
-                onClick={() => setShowDeleteConfirm(true)}
-                className="fluent-button !bg-red-50 hover:!bg-red-100 text-red-600"
-              >
-                删除
-              </button>
-            )}
-          </div>
-        </div>
-
-        {showDeleteConfirm && (
-          <div className="fixed inset-0 flex items-center justify-center z-[60]">
-            <div className="absolute inset-0 bg-black/20 backdrop-blur-sm" 
-                 onClick={() => setShowDeleteConfirm(false)} />
-            
-            <div className="relative w-[min(400px,90vw)] p-6 rounded-xl 
-                          bg-white/90 backdrop-blur-xl border border-white/40 
-                          shadow-[0_8px_32px_rgba(0,0,0,0.1)]">
-              <h3 className="text-lg font-semibold mb-4">确认删除</h3>
-              <p className="text-[var(--text-secondary)] mb-6">
-                确定要删除这个节点吗？此操作将同时删除所有子节点，且不可恢复。
-              </p>
-              
-              <div className="flex justify-end space-x-3">
-                <button onClick={() => setShowDeleteConfirm(false)}
-                        className="fluent-button">
+      <Modal 
+        isOpen={showDeleteConfirm} 
+        onClose={() => setShowDeleteConfirm(false)}
+        size="sm"
+        backdrop="blur"
+        classNames={{
+          backdrop: "bg-background/50 backdrop-blur-md",
+          base: "border border-divider bg-background/80",
+        }}
+      >
+        <ModalContent>
+          {(onClose) => (
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+            >
+              <ModalHeader>确认删除</ModalHeader>
+              <ModalBody>
+                <p className="text-foreground-500">
+                  确定要删除这个节点吗？此操作将同时删除所有子节点，且不可恢复。
+                </p>
+              </ModalBody>
+              <ModalFooter>
+                <Button
+                  color="default"
+                  variant="light"
+                  onPress={() => setShowDeleteConfirm(false)}
+                >
                   取消
-                </button>
-                <button onClick={handleDelete}
-                        className="fluent-button !bg-red-50 hover:!bg-red-100 text-red-600">
+                </Button>
+                <Button
+                  color="danger"
+                  onPress={handleDelete}
+                >
                   删除
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
-      </div>
-    </div>
+                </Button>
+              </ModalFooter>
+            </motion.div>
+          )}
+        </ModalContent>
+      </Modal>
+    </>
   );
 } 

@@ -2,52 +2,14 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  --acrylic-background: rgba(252, 252, 252, 0.85);
-  --layer-background: rgba(255, 255, 255, 0.5);
-  --accent: #0078D4;
-  --text-primary: rgba(0, 0, 0, 0.9);
-  --text-secondary: rgba(0, 0, 0, 0.6);
-  --border: rgba(0, 0, 0, 0.1);
-}
-
-body {
-  color: var(--text-primary);
-  background: linear-gradient(135deg, #f5f7fa 0%, #e4e8ec 100%);
-  font-family: var(--font-geist-sans);
-}
-
-.acrylic {
-  backdrop-filter: blur(20px) saturate(125%);
-  -webkit-backdrop-filter: blur(20px) saturate(125%);
-}
-
-.layer {
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-}
-
-@layer components {
-  .fluent-surface {
-    @apply bg-white/50 backdrop-blur-xl border border-white/20 shadow-sm;
+@layer base {
+  body {
+    @apply min-h-screen bg-background text-foreground overflow-x-hidden;
   }
-  
-  .fluent-card {
-    @apply bg-white/60 backdrop-blur-md border border-white/30
-           hover:bg-white/70 transition-all duration-200
-           shadow-[0_8px_16px_rgba(0,0,0,0.05)];
-  }
-  
-  .fluent-button {
-    @apply px-4 py-2 rounded-md bg-white/70 backdrop-blur-md
-           hover:bg-white/80 active:bg-white/90
-           border border-white/30 shadow-sm
-           transition-all duration-200;
-  }
-  
-  .fluent-primary-button {
-    @apply px-4 py-2 rounded-md bg-[var(--accent)] text-white
-           hover:bg-[#106EBE] active:bg-[#005A9E]
-           shadow-sm transition-all duration-200;
+}
+
+@layer utilities {
+  .acrylic {
+    @apply backdrop-blur-xl backdrop-saturate-150;
   }
 }

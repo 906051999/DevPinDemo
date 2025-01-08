@@ -1,6 +1,7 @@
 import { Handle, Position, useReactFlow } from 'reactflow';
 import { Node } from '@/types/node';
 import { useNodes } from '@/contexts/NodesContext';
+import React from 'react';
 
 
 interface CustomNodeProps {
@@ -10,22 +11,35 @@ interface CustomNodeProps {
 export default function CustomNode({ data }: CustomNodeProps) {
   const { nodes, setNodes, createNode } = useNodes();
   const { setCenter } = useReactFlow();
+  const [isSelected, setIsSelected] = React.useState(false);
   
   const addNode = async (isChild: boolean) => {
     const parentSequence = isChild ? data.node.sequence : data.node.sequence.split('.').slice(0, -1).join('.');
     await createNode(parentSequence, isChild ? data.node.level + 1 : data.node.level);
   };
 
+  React.useEffect(() => {
+    const handleNodeSelected = (e: CustomEvent) => {
+      setIsSelected(e.detail.nodeId === data.node.id);
+    };
+
+    window.addEventListener('node-selected', handleNodeSelected as EventListener);
+    return () => {
+      window.removeEventListener('node-selected', handleNodeSelected as EventListener);
+    };
+  }, [data.node.id]);
+
   return (
     <div className="relative group">
       <Handle type="target" position={Position.Left} 
               className="w-3 h-3 !bg-[var(--accent)] !border-white/50" />
       
-      <div className="px-4 py-2 rounded-lg min-w-[120px] text-center
+      <div className={`px-4 py-2 rounded-lg min-w-[120px] text-center
                     bg-white/70 backdrop-blur-md border border-white/30
                     shadow-[0_4px_12px_rgba(0,0,0,0.05)]
                     hover:bg-white/80 hover:shadow-[0_8px_16px_rgba(0,0,0,0.08)]
-                    transition-all duration-200">
+                    transition-all duration-200
+                    ${isSelected ? 'ring-2 ring-primary-300' : ''}`}>
         {data.label}
         
         {/* 悬停时的光效 */}
