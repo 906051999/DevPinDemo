@@ -1,8 +1,13 @@
 import { Node } from '@/types/node';
-import { Card, CardBody, CardHeader, CardFooter } from "@nextui-org/react";
+import { Card, Typography, Badge } from 'antd';
+import { MessageOutlined, InfoCircleOutlined } from '@ant-design/icons';
 import { formatDistanceToNow } from 'date-fns';
 import { zhCN } from 'date-fns/locale';
 import { useRouter } from 'next/navigation';
+import { theme } from 'antd';
+import MarkdownPreview from '@uiw/react-markdown-preview';
+
+const { Text, Title } = Typography;
 
 interface NodeCardProps {
   node: Node;
@@ -16,14 +21,13 @@ export default function NodeCard({
   node, 
   onOpenDialog, 
   isSelected,
-
 }: NodeCardProps) {
   const router = useRouter();
   const chatCount = node.chatHistory?.length || 0;
   const hasChat = chatCount > 0;
+  const { token } = theme.useToken();
 
   const handleClick = () => {
-    // 触发与 NodeMindMap 相同的事件
     const customEvent = new CustomEvent('node-selected', { 
       detail: { nodeId: node.id }
     });
@@ -31,87 +35,118 @@ export default function NodeCard({
   };
 
   const handleChatClick = () => {
-    // 直接跳转到聊天页面，cookie 会由中间件处理
     router.push('/chat');
-    
-    // 设置 cookie
     document.cookie = `nodeId=${node.id}; path=/`;
   };
 
   return (
-    <Card 
-      isPressable
-      isHoverable
-      shadow="sm"
+    <Card
+      hoverable
+      onClick={handleClick}
       className="h-full aspect-[2.5/3.5]"
-      classNames={{
-        base: isSelected ? 'border-2 border-primary-300 shadow-medium' : '',
-        body: "py-2"
+      style={{
+        ...(isSelected && {
+          outline: `2px solid ${token.colorPrimary}`,
+          outlineOffset: '2px',
+        })
       }}
-      onPress={handleClick}
+      styles={{
+        body: { 
+          padding: '8px 16px', 
+          height: '100%', 
+          display: 'flex', 
+          flexDirection: 'column' 
+        }
+      }}
     >
-      <CardHeader className="pb-0 pt-2 px-4 flex-col items-stretch">
-        <div className="flex items-center justify-between">
-          <span className="text-sm text-default-500">{node.number}</span>
-          <span className="text-[10px] bg-default-100 text-default-600 px-1.5 py-0.5 rounded-full truncate max-w-[120px]">
-            {formatDistanceToNow(new Date(node.updatedAt), { 
-              locale: zhCN, 
-              addSuffix: true,
-            })}
-          </span>
-        </div>
-        <h3 className="font-medium line-clamp-1 mt-1">{node.generateTitle || node.title}</h3>
-      </CardHeader>
-      
-      <CardBody>
-        <p className="text-sm text-default-500 line-clamp-2">
-          {node.generateContent || node.content}
-        </p>
-      </CardBody>
-
-      <CardFooter className="grid grid-cols-2 gap-2">
-        <button 
-          onPointerDown={(e) => {
-            e.stopPropagation();
+      <div className="flex justify-between items-center mb-2">
+        <Text type="secondary">{node.number}</Text>
+        <Text 
+          type="secondary" 
+          className="text-xs px-2 py-0.5 rounded-full"
+          style={{
+            background: token.colorFillQuaternary,
           }}
-          onClick={handleChatClick}
-          className={`flex items-center justify-center gap-1 py-1.5 rounded-lg transition-colors relative
-            ${hasChat ? 'text-primary-500 hover:bg-primary-50' : 'text-default-400 hover:bg-default-100'}`}
+        >
+          {formatDistanceToNow(new Date(node.updatedAt), { 
+            locale: zhCN, 
+            addSuffix: true,
+          })}
+        </Text>
+      </div>
+      
+      <Title level={5} ellipsis className="mb-2">
+        {node.generateTitle || node.title}
+      </Title>
+      
+      <div className="flex-1 text-sm overflow-hidden">
+        <MarkdownPreview 
+          source={node.generateContent || node.content} 
+          style={{ 
+            backgroundColor: 'transparent',
+            color: token.colorTextSecondary,
+            fontSize: '12px',
+            lineHeight: 2,
+          }}
+          components={{
+            p: ({ children }) => (
+              <p style={{ 
+                margin: 0,
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+                display: '-webkit-box',
+                WebkitLineClamp: 3,
+                WebkitBoxOrient: 'vertical',
+              }}>{children}</p>
+            ),
+          }}
+        />
+      </div>
+
+      <div className="grid grid-cols-2 gap-2 mt-4">
+        <button 
+          onPointerDown={(e) => e.stopPropagation()}
+          onClick={(e) => {
+            e.stopPropagation();
+            handleChatClick();
+          }}
+          className="flex items-center justify-center gap-1.5 py-1.5 rounded-lg transition-all duration-200 relative hover:scale-[1.02] active:scale-[0.98]"
+          style={{
+            backgroundColor: 'transparent',
+            color: hasChat ? token.colorPrimary : token.colorTextSecondary,
+            border: `1px solid ${hasChat ? token.colorPrimary : token.colorBorder}`,
+          }}
           aria-label="Chat"
         >
-          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} 
-                  d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
-          </svg>
-          <span className="text-xs">聊天</span>
+          <MessageOutlined style={{ fontSize: '14px' }} />
+          <span className="text-xs font-medium">聊天</span>
           {chatCount > 0 && (
-            <span className="absolute -top-1 -right-1 min-w-[20px] h-5 px-1 
-              flex items-center justify-center text-xs rounded-full 
-              bg-primary-500 text-white font-medium">
-              {chatCount}
-            </span>
+            <Badge 
+              count={chatCount}
+              className="absolute -top-2 -right-2"
+            />
           )}
         </button>
 
         <button 
-          onPointerDown={(e) => {
-            e.stopPropagation();
-          }}
+          onPointerDown={(e) => e.stopPropagation()}
           onClick={(e) => {
             e.preventDefault();
             e.stopPropagation();
             onOpenDialog(node.id);
           }}
-          className="flex items-center justify-center gap-1 py-1.5 rounded-lg hover:bg-default-100 transition-colors"
+          className="flex items-center justify-center gap-1.5 py-1.5 rounded-lg transition-colors"
+          style={{
+            backgroundColor: 'transparent',
+            color: token.colorTextSecondary,
+            border: `1px solid ${token.colorBorder}`,
+          }}
           aria-label="Show details"
         >
-          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} 
-                  d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-          </svg>
-          <span className="text-xs">信息</span>
+          <InfoCircleOutlined style={{ fontSize: '14px' }} />
+          <span className="text-xs font-medium">信息</span>
         </button>
-      </CardFooter>
+      </div>
     </Card>
   );
 } 

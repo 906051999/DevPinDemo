@@ -2,14 +2,14 @@
 @tailwind components;
 @tailwind utilities;
 
-@layer base {
-  body {
-    @apply min-h-screen bg-background text-foreground overflow-x-hidden;
-  }
+/* 导入 antd 样式 */
+@import 'antd/dist/reset.css';
+
+body {
+  min-height: 100vh;
+  overflow-x: hidden;
 }
 
-@layer utilities {
-  .acrylic {
-    @apply backdrop-blur-xl backdrop-saturate-150;
-  }
+.acrylic {
+  backdrop-filter: blur(16px) saturate(150%);
 }

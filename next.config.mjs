@@ -6,6 +6,7 @@ const nextConfig = {
   eslint: {
     ignoreDuringBuilds: true,
   },
+  transpilePackages: ['@ant-design/pro-chat', 'antd', '@ant-design/icons'],
 };
 
 export default nextConfig;

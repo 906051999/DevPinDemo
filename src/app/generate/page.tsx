@@ -2,15 +2,17 @@
 
 import { useNodes } from '@/contexts/NodesContext';
 import { Node } from '@/types/node';
-import { Button, Input, Textarea } from '@nextui-org/react';
 import { useState } from 'react';
-import { Bot, Sparkles } from 'lucide-react';
 import { splitNode, generateRoot } from '@/lib/api';
 import { AIResponseParser } from '@/lib/parser';
-import MarkdownPreview from '@uiw/react-markdown-preview';
-import { useTheme } from 'next-themes';
-import { NavbarComponent } from '@/components/Navbar';
 import { useRouter } from 'next/navigation';
+import { Button, Input, Card, Typography, Space, message } from 'antd';
+import { RobotOutlined, MessageOutlined, ThunderboltOutlined, DeleteOutlined } from '@ant-design/icons';
+import { useTheme } from '@/app/providers';
+import MarkdownPreview from '@uiw/react-markdown-preview';
+
+const { TextArea } = Input;
+const { Title, Text } = Typography;
 
 export default function ExportPage() {
   const { nodes, updateNode, deleteNode, createGenerateNode, setNodes } = useNodes();
@@ -18,7 +20,7 @@ export default function ExportPage() {
   const [generatingId, setGeneratingId] = useState<string | null>(null);
   const [splittingId, setSplittingId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const { theme, setTheme } = useTheme();
+  const { isDark } = useTheme();
   const router = useRouter();
 
   const handleAIOptimize = async (node: Node) => {
@@ -35,9 +37,11 @@ export default function ExportPage() {
         generateTitle: result.title,
         generateContent: result.description + '\n\n' + "功能点: \n" + result.features.join('\n')
       });
+      message.success('AI优化成功');
     } catch (error) {
       console.error('AI优化失败:', error);
       setError(error instanceof Error ? error.message : '生成失败，请重试');
+      message.error('AI优化失败，请重试');
     } finally {
       setGeneratingId(null);
     }
@@ -76,9 +80,11 @@ export default function ExportPage() {
       }
       
       setNodes([...nodes, ...newNodes]);
+      message.success('AI拆分成功');
     } catch (error) {
       console.error('AI拆分失败:', error);
       setError(error instanceof Error ? error.message : 'AI拆分失败，请重试');
+      message.error('AI拆分失败，请重试');
     } finally {
       setSplittingId(null);
     }
@@ -98,169 +104,139 @@ export default function ExportPage() {
 
     const isEditing = editingId === node.id;
     const hasAiContent = node.generateTitle || node.generateContent;
-
     const chatCount = node.chatHistory?.length || 0;
-    const hasChat = chatCount > 0;
 
     return (
-      <div key={node.id} className="p-4 m-4 border rounded-lg shadow-sm group">
-        <div className="prose max-w-none">
-          {isEditing ? (
-            <div className="space-y-4">
-              <div className="space-y-2">
-                <div className="text-sm text-default-500">标题</div>
-                <Input
-                  defaultValue={node.title}
-                  onBlur={(e) => updateNode(node.id, { title: e.target.value })}
-                  className="mb-2"
-                />
-                <div className="h-px bg-default-200" />
-                <div className="p-2 bg-default-50 rounded-lg">
-                  <MarkdownPreview 
-                    source={generatingId === node.id ? "AI 正在生成..." : node.generateTitle}
-                    wrapperElement={{
-                      "data-color-mode": theme
-                    }}
-                  />
-                </div>
-              </div>
+      <Card 
+        key={node.id} 
+        className="m-4"
+        title={
+          <div className="flex items-center gap-2">
+            <Text>{headingLevel}</Text>
+            {hasAiContent && <RobotOutlined className="text-primary" />}
+          </div>
+        }
+      >
+        {isEditing ? (
+          <Space direction="vertical" className="w-full">
+            <div className="flex justify-between items-center mb-4">
+              <Text type="secondary">标题</Text>
+              <Button 
+                danger
+                type="text"
+                size="normal"
+                icon={<DeleteOutlined />}
+                onClick={async () => {
+                  await deleteNode(node.id);
+                  setEditingId(null);
+                }}
+              />
+            </div>
 
-              <div className="space-y-2">
-                <div className="text-sm text-default-500">内容</div>
-                <Textarea
-                  defaultValue={node.content}
-                  onBlur={(e) => updateNode(node.id, { content: e.target.value })}
-                  className="mb-2"
-                />
-                <div className="h-px bg-default-200" />
-                <div className="p-2 bg-default-50 rounded-lg">
-                  <MarkdownPreview 
-                    source={generatingId === node.id ? "AI 正在生成..." : node.generateContent}
-                    wrapperElement={{
-                      "data-color-mode": theme
-                    }}
+            <div>
+              <Input
+                defaultValue={node.title}
+                onBlur={(e) => updateNode(node.id, { title: e.target.value })}
+              />
+              {node.generateTitle && (
+                <div className="mt-2">
+                  <Text type="secondary">AI 标题</Text>
+                  <Input
+                    defaultValue={node.generateTitle}
+                    onBlur={(e) => updateNode(node.id, { generateTitle: e.target.value })}
+                    placeholder={generatingId === node.id ? "AI 正在生成..." : undefined}
                   />
-                </div>
-              </div>
-
-              {error && (
-                <div className="text-danger text-sm mt-2">
-                  {error}
                 </div>
               )}
-
-              <div className="flex justify-between items-center">
-                <div className="flex gap-2">
-                  <Button 
-                    color="primary" 
-                    variant="flat"
-                    startContent={<Sparkles size={16} />}
-                    onPress={() => handleAIOptimize(node)}
-                    isLoading={generatingId === node.id}
-                    isDisabled={generatingId !== null || splittingId !== null}
-                  >
-                    {generatingId === node.id ? 'AI 生成中...' : 'AI 优化'}
-                  </Button>
-                  <Button 
-                    color="secondary" 
-                    variant="flat"
-                    startContent={<Bot size={16} />}
-                    onPress={() => handleAISplit(node)}
-                    isLoading={splittingId === node.id}
-                    isDisabled={generatingId !== null || splittingId !== null}
-                  >
-                    {splittingId === node.id ? 'AI 拆分中...' : 'AI 拆分'}
-                  </Button>
-                  <div className="relative">
-                    <Button
-                      color="default"
-                      variant="flat"
-                      startContent={
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} 
-                            d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
-                        </svg>
-                      }
-                      onPress={() => handleChatClick(node.id)}
-                      className={hasChat ? 'text-primary-500 hover:bg-primary-50' : ''}
-                    >
-                      聊天
-                    </Button>
-                    {chatCount > 0 && (
-                      <span className="absolute -top-2 -right-2 min-w-[20px] h-5 px-1 
-                        flex items-center justify-center text-xs rounded-full 
-                        bg-primary-500 text-white font-medium">
-                        {chatCount}
-                      </span>
-                    )}
-                  </div>
-                </div>
-
-                <div className="flex gap-2">
-                  <Button 
-                    color="default" 
-                    variant="light"
-                    onPress={() => setEditingId(null)}
-                  >
-                    完成
-                  </Button>
-                  <Button 
-                    color="danger" 
-                    variant="light"
-                    onPress={async () => {
-                      await deleteNode(node.id);
-                      setEditingId(null);
-                    }}
-                  >
-                    删除
-                  </Button>
-                </div>
-              </div>
             </div>
-          ) : (
-            <div 
-              className="cursor-pointer group-hover:bg-default-100 rounded p-2"
-              onClick={() => setEditingId(node.id)}
-            >
-              <div className="flex items-center gap-2">
+
+            <div>
+              <Text type="secondary">内容</Text>
+              <TextArea
+                defaultValue={node.content}
+                onBlur={(e) => updateNode(node.id, { content: e.target.value })}
+                rows={4}
+              />
+              {node.generateContent && (
+                <div className="mt-2">
+                  <Text type="secondary">AI 内容</Text>
+                  <TextArea
+                    defaultValue={node.generateContent}
+                    onBlur={(e) => updateNode(node.id, { generateContent: e.target.value })}
+                    placeholder={generatingId === node.id ? "AI 正在生成..." : undefined}
+                    rows={6}
+                  />
+                </div>
+              )}
+            </div>
+
+            {error && <Text type="danger">{error}</Text>}
+
+            <div className="flex justify-between items-center">
+              <Space>
+                <Button 
+                  type="primary"
+                  icon={<ThunderboltOutlined />}
+                  onClick={() => handleAIOptimize(node)}
+                  loading={generatingId === node.id}
+                  disabled={generatingId !== null || splittingId !== null}
+                >
+                  AI 优化
+                </Button>
+                <Button
+                  icon={<RobotOutlined />}
+                  onClick={() => handleAISplit(node)}
+                  loading={splittingId === node.id}
+                  disabled={generatingId !== null || splittingId !== null}
+                >
+                  AI 拆分
+                </Button>
+                <Button
+                  icon={<MessageOutlined />}
+                  onClick={() => handleChatClick(node.id)}
+                  badge={{ count: chatCount }}
+                >
+                  聊天
+                </Button>
+              </Space>
+
+              <Button onClick={() => setEditingId(null)}>
+                完成
+              </Button>
+            </div>
+          </Space>
+        ) : (
+          <div onClick={() => setEditingId(node.id)}>
+            <Title level={node.level + 2 as 1 | 2 | 3 | 4 | 5}>
+              {node.generateTitle || node.title}
+            </Title>
+            {(node.generateContent || node.content) && (
+              <div className="mt-2">
                 <MarkdownPreview 
-                  source={`${headingLevel} ${node.generateTitle || node.title}`}
-                  className="inline"
-                  wrapperElement={{
-                    "data-color-mode": theme
+                  source={node.generateContent || node.content} 
+                  style={{
+                    backgroundColor: 'transparent',
+                    color: 'inherit'
                   }}
                 />
-                {hasAiContent && (
-                  <Bot className="text-primary" size={18} />
-                )}
               </div>
-              {(node.generateContent || node.content) && (
-                <div className="mt-2 text-gray-600">
-                  <MarkdownPreview 
-                    source={node.generateContent || node.content}
-                    wrapperElement={{
-                      "data-color-mode": theme
-                    }}
-                  />
-                </div>
-              )}
-            </div>
-          )}
-        </div>
+            )}
+          </div>
+        )}
+        
         {childNodes.length > 0 && (
           <div className="ml-4">
             {childNodes.map(child => renderNode(child))}
           </div>
         )}
-      </div>
+      </Card>
     );
   };
 
   const rootNode = nodes.find(n => n.level === 0);
 
   return (
-    <div className="container mx-auto py-8 pt-16">
-        <NavbarComponent />
+    <div className="container mx-auto py-8">
       {rootNode && renderNode(rootNode)}
     </div>
   );

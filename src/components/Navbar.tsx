@@ -1,70 +1,75 @@
 'use client';
 
-import {
-  Navbar,
-  NavbarContent,
-  NavbarItem,
-  Button,
-} from '@nextui-org/react';
+import { Layout, Menu, Button } from 'antd';
 import { useRouter, usePathname } from 'next/navigation';
-import { useTheme } from 'next-themes';
-import { SunIcon, MoonIcon } from '@heroicons/react/24/outline';
-import { MonitorSmartphone, GitFork, MessageSquareMore } from 'lucide-react';
+import { useTheme } from '@/app/providers';
+import { 
+  RobotOutlined, 
+  ForkOutlined, 
+  MessageOutlined,
+  SunOutlined,
+  MoonOutlined
+} from '@ant-design/icons';
+import { useCallback } from 'react';
+
+const { Header } = Layout;
 
 export function NavbarComponent() {
   const router = useRouter();
   const pathname = usePathname();
-  const { theme, setTheme } = useTheme();
+  const { isDark, setIsDark } = useTheme();
+
+  const handleThemeToggle = useCallback(() => {
+    setIsDark(prev => !prev);
+  }, [setIsDark]);
 
   const navItems = [
-    { path: '/generate', icon: MonitorSmartphone, label: '智能规划' },
-    { path: '/kanban', icon: GitFork, label: '思维导图' },
-    { path: '/chat', icon: MessageSquareMore, label: '项目聊天' },
+    { 
+      key: '/generate', 
+      icon: <RobotOutlined />, 
+      label: '智能规划',
+    },
+    { 
+      key: '/kanban', 
+      icon: <ForkOutlined />, 
+      label: '思维导图',
+    },
+    { 
+      key: '/chat', 
+      icon: <MessageOutlined />, 
+      label: '项目聊天',
+    },
   ];
 
   return (
-    <Navbar 
-      isBordered 
-      className="fixed top-0 w-full"
-      maxWidth="full"
+    <Header 
+      className="fixed top-0 w-full z-10 flex items-center justify-between px-4"
+      style={{ 
+        background: 'transparent',
+        backdropFilter: 'blur(30px)',
+        height: 'auto',
+      }}
     >
-      <NavbarContent className="gap-2 sm:gap-4" justify="center">
-        {navItems.map((item) => {
-          const Icon = item.icon;
-          const isActive = pathname === item.path;
-          return (
-            <NavbarItem key={item.path} isActive={isActive}>
-              <Button
-                variant={isActive ? "solid" : "light"}
-                onClick={() => router.push(item.path)}
-                className="gap-2"
-                size="sm"
-              >
-                <Icon className="h-4 w-4" />
-                <span className="hidden sm:inline">{item.label}</span>
-              </Button>
-            </NavbarItem>
-          );
-        })}
-      </NavbarContent>
+      <div className="flex-1 flex">
+        <Menu
+          mode="horizontal"
+          selectedKeys={[pathname]}
+          items={navItems}
+          onClick={({ key }) => router.push(key)}
+          style={{ 
+            background: 'transparent',
+            borderBottom: 'none',
+            width: '100%',
+          }}
+          overflowedIndicator={null}
+        />
+      </div>
 
-      <NavbarContent justify="end">
-        <NavbarItem>
-          <Button
-            isIconOnly
-            variant="light"
-            size="sm"
-            onPress={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-            className="data-[hover]:bg-foreground/10"
-          >
-            {theme === 'dark' ? (
-              <SunIcon className="h-4 w-4" />
-            ) : (
-              <MoonIcon className="h-4 w-4" />
-            )}
-          </Button>
-        </NavbarItem>
-      </NavbarContent>
-    </Navbar>
+      <Button
+        type="text"
+        icon={isDark ? <SunOutlined /> : <MoonOutlined />}
+        onClick={handleThemeToggle}
+      />
+    </Header>
   );
 } 

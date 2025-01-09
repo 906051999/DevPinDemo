@@ -1,11 +1,11 @@
 import { useNodes } from '@/contexts/NodesContext';
-import NodeCard from './NodeCard';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { FreeMode, Mousewheel } from 'swiper/modules';
+import type { Swiper as SwiperType } from 'swiper';
+import { useEffect, useState } from 'react';
 import 'swiper/css';
 import 'swiper/css/free-mode';
-import { useEffect, useState } from 'react';
-import type { Swiper as SwiperType } from 'swiper';
+import NodeCard from './NodeCard';
 
 interface NodeCardPanelProps {
   onOpenDialog: (nodeId: string) => void;
@@ -39,16 +39,13 @@ export default function NodeCardPanel({ onOpenDialog }: NodeCardPanelProps) {
     return () => window.removeEventListener('node-selected', handleNodeSelected as EventListener);
   }, [nodes, swiper]);
 
-  // 监听 selectedNodeId 变化，自动滚动到对应位置
   useEffect(() => {
-    if (!swiper || !selectedNodeId ) return;
+    if (!swiper || !selectedNodeId) return;
     
     const index = sortedNodes.findIndex(n => n.id === selectedNodeId);
     if (index !== -1) {
       swiper.slideTo(index, 500, false);
-      if (index == currentIndex) {
-        return;
-      }
+      if (index === currentIndex) return;
     }
   }, [selectedNodeId, swiper, sortedNodes]);
 
@@ -81,7 +78,7 @@ export default function NodeCardPanel({ onOpenDialog }: NodeCardPanelProps) {
             <NodeCard
               node={node}
               onOpenDialog={onOpenDialog}
-              isSelected={node.id === selectedNodeId}
+              isSelected={selectedNodeId === node.id}
             />
           </SwiperSlide>
         ))}
