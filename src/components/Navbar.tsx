@@ -9,7 +9,8 @@ import {
   MessageOutlined,
   SunOutlined,
   MoonOutlined,
-  HomeOutlined
+  HomeOutlined,
+  ProjectOutlined
 } from '@ant-design/icons';
 import { useCallback } from 'react';
 
@@ -39,6 +40,11 @@ export function NavbarComponent() {
       key: '/chat', 
       icon: <MessageOutlined />, 
       label: '项目聊天',
+    },
+    { 
+      key: '/project',
+      icon: <ProjectOutlined />,
+      label: '项目体验',
     },
   ];
 

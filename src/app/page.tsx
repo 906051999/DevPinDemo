@@ -865,6 +865,9 @@ export default function Home() {
           <Title level={1} className="text-5xl mb-6">DevPin</Title>
           <Title level={3} className="text-5xl mb-6">一套理念 · 两端体验 · 三种能力</Title>
           <Title level={5} className="text-2xl mb-6">只有一个要求，好用到想哭</Title>
+          <Button type="primary" size="large" onClick={() => router.push('/project')}>
+              别走啊，体验一下模拟实况，真的好用到想哭
+            </Button>
         </div>
 
         {/* Platform Introduction */}
@@ -1039,8 +1042,8 @@ export default function Home() {
               {/* CTA Section */}
               <div className="text-center mt-20">
           <Space size="large" direction="vertical">
-            <Button type="primary" size="large" onClick={() => router.push('/kanban')}>
-              体验网页版
+            <Button type="primary" size="large" onClick={() => router.push('/project')}>
+              体验一下项目，好用到想哭
             </Button>
             <Space size="middle">
               <Button icon={<MobileOutlined />}>下载Chat</Button>
