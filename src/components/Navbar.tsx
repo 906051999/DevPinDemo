@@ -8,7 +8,8 @@ import {
   ForkOutlined, 
   MessageOutlined,
   SunOutlined,
-  MoonOutlined
+  MoonOutlined,
+  HomeOutlined
 } from '@ant-design/icons';
 import { useCallback } from 'react';
 
@@ -70,6 +71,7 @@ export function NavbarComponent() {
         icon={isDark ? <SunOutlined /> : <MoonOutlined />}
         onClick={handleThemeToggle}
       />
+      <Button type="text" icon={<HomeOutlined />} onClick={() => router.push('/')} />
     </Header>
   );
 } 
