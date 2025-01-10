@@ -304,7 +304,6 @@ export default function Home() {
             <Card title="AI 助手" size="small">
               <div className="space-y-4">
                 <div className={`
-                  bg-green-50 
                   ${isDark ? 'bg-gray-700' : 'bg-white'}
                   p-3 
                   rounded
@@ -519,7 +518,6 @@ export default function Home() {
                 </div>
               </div>
               <div className={`
-                bg-green-50 
                 ${isDark ? 'bg-gray-700' : 'bg-white'}
                 p-3 
                 rounded
@@ -764,7 +762,6 @@ export default function Home() {
           >
             <div className="space-y-4">
               <div className={`
-                bg-green-50 
                 ${isDark ? 'bg-gray-700' : 'bg-white'}
                 p-3 
                 rounded
@@ -794,7 +791,6 @@ export default function Home() {
           >
             <div className="space-y-4">
               <div className={`
-                bg-purple-50 
                 ${isDark ? 'bg-gray-700' : 'bg-white'}
                 p-3 
                 rounded
