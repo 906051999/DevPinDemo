@@ -165,12 +165,6 @@ export default function ProjectPage() {
                   border: `1px solid ${token.colorBorderSecondary}`,
                 }}
               >
-                <div className="flex items-center justify-between">
-                  <Text strong>创建时间</Text>
-                  <Text type="secondary">
-                    {rootNode.createdAt ? new Date(rootNode.createdAt).toLocaleDateString() : '未知'}
-                  </Text>
-                </div>
               </div>
             </div>
 
