@@ -1,7 +1,10 @@
 'use client';
 
-import { Tabs } from 'antd';
+import { Tabs, Button } from 'antd';
 import type { TabsProps } from 'antd';
+import { useState } from 'react';
+import { ArrowRightOutlined } from '@ant-design/icons';
+
 import ProjectBrowse from './demos/ProjectBrowse';
 import ProjectSuggestion from './demos/ProjectSuggestion';
 import ProjectDevelopment from './demos/ProjectDevelopment';
@@ -9,52 +12,106 @@ import ProjectDiscussion from './demos/ProjectDiscussion';
 import ProjectImplementation from './demos/ProjectImplementation';
 import ProjectMonitoring from './demos/ProjectMonitoring';
 import ProjectMindMap from './demos/ProjectMindMap';
+import ProjectInspiration from './demos/ProjectInspiration';
+import ProjectPlanning from './demos/ProjectPlanning';
+import ProjectHub from './demos/ProjectHub';
 
 
 export default function DemoScenes() {
+  const [activeKey, setActiveKey] = useState('inspiration');
+
   const items: TabsProps['items'] = [
     {
-      key: 'browse',
-      label: '项目浏览体验',
-      children: <ProjectBrowse />,
-    },
-    {
-      key: 'suggestion',
-      label: '优化建议体验',
-      children: <ProjectSuggestion />,
-    },
-    {
-      key: 'development',
-      label: '开发参与体验',
-      children: <ProjectDevelopment />,
+      key: 'inspiration',
+      label: (
+        <span>
+          1. 灵感孵化 <ArrowRightOutlined className="text-blue-500 animate-pulse" />
+        </span>
+      ),
+      children: <ProjectInspiration />,
     },
     {
       key: 'discussion',
-      label: '讨论交流体验',
+      label: (
+        <span>
+          2. 讨论交流 <ArrowRightOutlined className="text-blue-500 animate-pulse" />
+        </span>
+      ),
       children: <ProjectDiscussion />,
     },
     {
+      key: 'planning',
+      label: (
+        <span>
+          3. 项目规划 <ArrowRightOutlined className="text-blue-500 animate-pulse" />
+        </span>
+      ),
+      children: <ProjectPlanning />,
+    },
+    {
       key: 'implementation',
-      label: '项目实现体验',
+      label: (
+        <span>
+          4. 项目实现 <ArrowRightOutlined className="text-blue-500 animate-pulse" />
+        </span>
+      ),
       children: <ProjectImplementation />,
     },
     {
-      key: 'monitoring',
-      label: '项目监控体验',
-      children: <ProjectMonitoring />,
-    },
-    {
-      key: 'mindmap',
-      label: '项目思维图体验',
-      children: <ProjectMindMap />,
+      key: 'browse',
+      label: "5. 项目展示",
+      children: <ProjectHub />,
     },
   ];
 
+  const getNextTabInfo = () => {
+    const keys = items.map(item => item.key);
+    const labels = items.map(item => {
+      const labelText = typeof item.label === 'object' 
+        ? (item.label as any)?.props?.children[0]
+        : item.label;
+      return labelText?.toString().split('.')[1]?.trim() || '';
+    });
+    
+    const currentIndex = keys.indexOf(activeKey);
+    if (currentIndex < keys.length - 1) {
+      return {
+        key: keys[currentIndex + 1],
+        label: labels[currentIndex + 1]
+      };
+    }
+    return null;
+  };
+
+  const nextTab = () => {
+    const next = getNextTabInfo();
+    if (next) {
+      setActiveKey(next.key);
+      // 滚动到顶部
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  };
+
   return (
-    <Tabs
-      defaultActiveKey="browse"
-      items={items}
-      className="mt-8"
-    />
+    <div>
+      <Tabs
+        activeKey={activeKey}
+        items={items}
+        className="mt-8"
+        onChange={(key) => setActiveKey(key)}
+      />
+      
+      {activeKey !== 'browse' && (
+        <div className="flex justify-end mt-4">
+          <Button 
+            type="primary"
+            onClick={nextTab}
+            className="flex items-center gap-2 text-lg"
+          >
+            前往: {getNextTabInfo()?.label} <ArrowRightOutlined />
+          </Button>
+        </div>
+      )}
+    </div>
   );
 } 
