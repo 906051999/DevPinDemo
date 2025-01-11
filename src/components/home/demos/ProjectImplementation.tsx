@@ -162,7 +162,7 @@ export default function ProjectImplementation() {
       content: (
         <Space direction="vertical" className="w-full">
           <Text>好建议！我来调整监控系统的结构：</Text>
-          <Card size="small" className="bg-gray-50">
+          <Card size="small">
             <Text strong>监控系统</Text>
             <ul>
               <li>数据采集
@@ -196,7 +196,7 @@ export default function ProjectImplementation() {
       content: (
         <Space direction="vertical" className="w-full">
           <Text>是的，我来补充前端性能相关的任务：</Text>
-          <Card size="small" className="bg-blue-50">
+          <Card size="small">
             <Text strong>网站卡片组件</Text>
             <ul>
               <li>基础功能

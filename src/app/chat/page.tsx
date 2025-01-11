@@ -1,6 +1,5 @@
 'use client';
 
-import { NavbarComponent } from '@/components/Navbar';
 import { ChatSelect } from '@/components/chat/ChatSelect';
 import { ChatRoom } from '@/components/chat/ChatRoom';
 import { useNodes } from '@/contexts/NodesContext';
@@ -149,7 +148,6 @@ export default function ChatPage() {
 
   return (
     <Layout className="h-screen pt-16">
-      <NavbarComponent />
       
       <Layout className="h-full">
         <ChatSelect 

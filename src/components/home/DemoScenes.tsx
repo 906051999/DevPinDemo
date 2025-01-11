@@ -2,7 +2,7 @@
 
 import { Tabs } from 'antd';
 import type { TabsProps } from 'antd';
-import ProjectBrowse from '@/components/project/demos/ProjectBrowse';
+import ProjectBrowse from './demos/ProjectBrowse';
 import ProjectSuggestion from './demos/ProjectSuggestion';
 import ProjectDevelopment from './demos/ProjectDevelopment';
 import ProjectDiscussion from './demos/ProjectDiscussion';

@@ -105,11 +105,11 @@ export default function ProjectSuggestion() {
                         title={<><Tag color="blue">{item.type}</Tag></>}
                         description={
                           <Space direction="vertical" className="w-full">
-                            <Card size="small" className="bg-gray-50">
+                            <Card size="small">
                               <Text type="secondary">原始表达：</Text>
                               <Paragraph>{item.original}</Paragraph>
                             </Card>
-                            <Card size="small" className="bg-blue-50">
+                            <Card size="small">
                               <Text type="secondary">优化建议：</Text>
                               <Paragraph>{item.optimized}</Paragraph>
                             </Card>

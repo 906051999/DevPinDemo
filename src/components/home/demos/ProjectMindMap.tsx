@@ -11,11 +11,28 @@ import ReactFlow, {
 import 'reactflow/dist/style.css';
 import { useState } from 'react';
 import { UserOutlined, RobotOutlined } from '@ant-design/icons';
+import { theme } from 'antd';
 
 const { Text } = Typography;
 
 const ProjectMindMap = () => {
   const [selectedNode, setSelectedNode] = useState<string | null>(null);
+  const { token } = theme.useToken();
+
+  // 添加节点样式生成函数
+  const getNodeStyle = (type: 'primary' | 'success' | 'default') => ({
+    background: type === 'primary' ? token.colorPrimaryBg :
+                type === 'success' ? token.colorSuccessBg :
+                token.colorBgContainer,
+    border: `2px solid ${
+      type === 'primary' ? token.colorPrimary :
+      type === 'success' ? token.colorSuccess :
+      token.colorBorder
+    }`,
+    borderRadius: '8px',
+    padding: '10px',
+    width: type === 'default' ? 150 : 180,
+  });
 
   const nodes: Node[] = [
     // SitePin 项目节点
@@ -31,13 +48,7 @@ const ProjectMindMap = () => {
         )
       },
       position: { x: 300, y: 100 },
-      style: {
-        background: '#f0f5ff',
-        border: '2px solid #1890ff',
-        borderRadius: '8px',
-        padding: '10px',
-        width: 180,
-      }
+      style: getNodeStyle('primary')
     },
     // SitePin 子节点
     {
@@ -51,7 +62,7 @@ const ProjectMindMap = () => {
         )
       },
       position: { x: 100, y: 250 },
-      style: { width: 150 }
+      style: getNodeStyle('default')
     },
     {
       id: 'sitepin-monitor',
@@ -64,7 +75,7 @@ const ProjectMindMap = () => {
         )
       },
       position: { x: 300, y: 250 },
-      style: { width: 150 }
+      style: getNodeStyle('default')
     },
     {
       id: 'sitepin-ai',
@@ -77,7 +88,7 @@ const ProjectMindMap = () => {
         )
       },
       position: { x: 500, y: 250 },
-      style: { width: 150 }
+      style: getNodeStyle('default')
     },
     // DevPin 项目节点
     {
@@ -91,13 +102,7 @@ const ProjectMindMap = () => {
         )
       },
       position: { x: 900, y: 100 },
-      style: {
-        background: '#f6ffed',
-        border: '2px solid #52c41a',
-        borderRadius: '8px',
-        padding: '10px',
-        width: 180,
-      }
+      style: getNodeStyle('success')
     },
     // DevPin 子节点
     {
@@ -111,7 +116,7 @@ const ProjectMindMap = () => {
         )
       },
       position: { x: 700, y: 250 },
-      style: { width: 150 }
+      style: getNodeStyle('default')
     },
     {
       id: 'devpin-ai',
@@ -124,7 +129,7 @@ const ProjectMindMap = () => {
         )
       },
       position: { x: 900, y: 250 },
-      style: { width: 150 }
+      style: getNodeStyle('default')
     },
     {
       id: 'devpin-analysis',
@@ -137,7 +142,7 @@ const ProjectMindMap = () => {
         )
       },
       position: { x: 1100, y: 250 },
-      style: { width: 150 }
+      style: getNodeStyle('default')
     }
   ];
 
@@ -252,14 +257,22 @@ const ProjectMindMap = () => {
     <Row gutter={[16, 16]}>
       <Col span={24}>
         <Card title="项目节点图" className="mb-4">
-          <div style={{ height: '600px' }}>
+          <div style={{ 
+            height: '600px',
+            background: token.colorBgContainer
+          }}>
             <ReactFlow
               nodes={nodes}
               edges={edges}
               onNodeClick={(_, node) => setSelectedNode(node.id)}
               fitView
+              proOptions={{
+                style: {
+                  backgroundColor: token.colorBgContainer,
+                }
+              }}
             >
-              <Background />
+              <Background color={token.colorBorder} />
               <Controls />
             </ReactFlow>
           </div>

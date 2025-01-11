@@ -44,7 +44,7 @@ export function NavbarComponent() {
     { 
       key: '/project',
       icon: <ProjectOutlined />,
-      label: '项目体验',
+      label: 'DevPinDemo',
     },
   ];
 
@@ -52,7 +52,7 @@ export function NavbarComponent() {
     <Header 
       className="fixed top-0 w-full z-10 flex items-center justify-between px-4"
       style={{ 
-        background: 'transparent',
+        background: isDark ? 'rgba(0,0,0,0.2)' : 'rgba(255,255,255,0.2)',
         backdropFilter: 'blur(30px)',
         height: 'auto',
       }}
@@ -68,6 +68,7 @@ export function NavbarComponent() {
             borderBottom: 'none',
             width: '100%',
           }}
+          className={isDark ? 'ant-menu-dark' : ''}
           overflowedIndicator={null}
         />
       </div>
@@ -76,8 +77,14 @@ export function NavbarComponent() {
         type="text"
         icon={isDark ? <SunOutlined /> : <MoonOutlined />}
         onClick={handleThemeToggle}
+        className={isDark ? 'text-white' : 'text-black'}
       />
-      <Button type="text" icon={<HomeOutlined />} onClick={() => router.push('/')} />
+      <Button 
+        type="text" 
+        icon={<HomeOutlined />} 
+        onClick={() => router.push('/')}
+        className={isDark ? 'text-white' : 'text-black'}
+      />
     </Header>
   );
 } 

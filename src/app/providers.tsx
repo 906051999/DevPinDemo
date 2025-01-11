@@ -1,7 +1,10 @@
 'use client'
 
-import { ConfigProvider, theme } from 'antd';
+import { ConfigProvider, theme, Layout } from 'antd';
 import { createContext, useContext, useState } from 'react';
+import { NavbarComponent } from "@/components/Navbar";
+import { NodesProvider } from '@/contexts/NodesContext';
+
 
 // 创建主题上下文
 interface ThemeContextType {
@@ -20,11 +23,17 @@ export function Providers({ children }: { children: React.ReactNode }) {
         theme={{
           algorithm: isDark ? theme.darkAlgorithm : theme.defaultAlgorithm,
           token: {
-            colorPrimary: '#0078F5',
           },
         }}
       >
-        {children}
+        <NodesProvider>
+          <NavbarComponent />
+          <Layout className="min-h-screen">
+            <Layout.Content className="pt-16">
+            {children}
+            </Layout.Content>
+          </Layout>
+        </NodesProvider>
       </ConfigProvider>
     </ThemeContext.Provider>
   )

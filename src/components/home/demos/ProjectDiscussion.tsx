@@ -21,7 +21,7 @@ export default function ProjectDiscussion() {
       content: (
         <Space direction="vertical" className="w-full">
           <Text>让我帮你梳理一下核心需求：</Text>
-          <Card size="small" className="bg-gray-50">
+          <Card size="small">
             <ul>
               <li>网站收藏与管理</li>
               <li>可视化展示（截图、状态）</li>
@@ -46,7 +46,7 @@ export default function ProjectDiscussion() {
       content: (
         <Space direction="vertical" className="w-full">
           <Text>补充技术可行性分析：</Text>
-          <Card size="small" className="bg-gray-50">
+          <Card size="small">
             <ul>
               <li>Chrome书签导入：可以解析HTML格式的书签文件</li>
               <li>网站监控：使用定时任务检查响应状态和时间</li>
@@ -69,7 +69,7 @@ export default function ProjectDiscussion() {
       content: (
         <Space direction="vertical" className="w-full">
           <Text>这是个很好的想法！让我整理一下完整的功能列表：</Text>
-          <Card size="small" className="bg-blue-50">
+          <Card size="small">
             <Title level={5}>核心功能</Title>
             <ul>
               <li>网站收藏与管理（卡片展示）</li>

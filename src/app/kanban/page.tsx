@@ -6,8 +6,6 @@ import { theme } from 'antd';
 import NodeMindMap from '@/components/kanban/NodeMindMap';
 import NodeCardPanel from '@/components/kanban/NodeCardPanel';
 import NodeDialog from '@/components/kanban/NodeDialog';
-import { NodesProvider } from '@/contexts/NodesContext';
-import { NavbarComponent } from '@/components/Navbar';
 
 export default function Home() {
   const [dialogNodeId, setDialogNodeId] = useState<string | null>(null);
@@ -22,7 +20,6 @@ export default function Home() {
   };
 
   return (
-    <NodesProvider>
       <div 
         className="w-screen h-screen flex flex-col pt-16"
         style={{ 
@@ -30,8 +27,6 @@ export default function Home() {
           color: token.colorText
         }}
       >
-        <NavbarComponent />
-        
         {/* 节点列表区域 */}
         <div 
           className="h-[30%]"
@@ -105,6 +100,6 @@ export default function Home() {
           onClose={handleCloseDialog}
         />
       </div>
-    </NodesProvider>
   );
 }
+
