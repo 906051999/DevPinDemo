@@ -168,7 +168,7 @@ export default function ProjectPage() {
                 <div className="flex items-center justify-between">
                   <Text strong>创建时间</Text>
                   <Text type="secondary">
-                    {new Date(rootNode.createdAt).toLocaleDateString()}
+                    {rootNode.createdAt ? new Date(rootNode.createdAt).toLocaleDateString() : '未知'}
                   </Text>
                 </div>
               </div>
