@@ -26,25 +26,30 @@ export function NavbarComponent() {
   }, [setIsDark]);
 
   const navItems = [
+    // { 
+    //   key: '/generate', 
+    //   icon: <RobotOutlined />, 
+    //   label: '智能规划',
+    // },
+    // { 
+    //   key: '/kanban', 
+    //   icon: <ForkOutlined />, 
+    //   label: '思维导图',
+    // },
+    // { 
+    //   key: '/chat', 
+    //   icon: <MessageOutlined />, 
+    //   label: '项目聊天',
+    // },
+    // { 
+    //   key: '/project',
+    //   icon: <ProjectOutlined />,
+    //   label: 'DevPinDemo',
+    // },
     { 
-      key: '/generate', 
-      icon: <RobotOutlined />, 
-      label: '智能规划',
-    },
-    { 
-      key: '/kanban', 
-      icon: <ForkOutlined />, 
-      label: '思维导图',
-    },
-    { 
-      key: '/chat', 
-      icon: <MessageOutlined />, 
-      label: '项目聊天',
-    },
-    { 
-      key: '/project',
-      icon: <ProjectOutlined />,
-      label: 'DevPinDemo',
+      key: '/IM',
+      icon: <MessageOutlined />,
+      label: 'DevIM',
     },
   ];
 
