@@ -1,5 +1,7 @@
 import { Message, Room, User } from '@/types'
 
+type MessageListener = (message: Message) => void
+
 export const api = {
   users: {
     getAll: async (): Promise<User[]> => {
@@ -26,6 +28,29 @@ export const api = {
   },
   
   messages: {
+    subscribe: (roomId: string, onMessage: MessageListener) => {
+      const eventSource = new EventSource(`/api/messages/stream?room_id=${roomId}`)
+      
+      eventSource.onmessage = (event) => {
+        try {
+          const message = JSON.parse(event.data)
+          onMessage(message)
+        } catch (e) {
+          console.error('Failed to parse message:', e)
+        }
+      }
+
+      eventSource.onerror = (error) => {
+        console.error('SSE error:', error)
+        eventSource.close()
+      }
+
+      // 返回清理函数
+      return () => {
+        eventSource.close()
+      }
+    },
+    
     getByRoom: async (roomId: string): Promise<Message[]> => {
       const res = await fetch(`/api/messages?room_id=${roomId}`)
       return res.json()
@@ -37,7 +62,6 @@ export const api = {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ content, room_id: roomId, user_id: userId })
       })
-      console.log(res)
       return res.json()
     }
   },

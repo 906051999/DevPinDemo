@@ -50,8 +50,19 @@ export default function IMPage() {
   }, [])
 
   useEffect(() => {
-    if (currentRoom) {
-      api.messages.getByRoom(currentRoom).then(setMessages)
+    if (!currentRoom) return
+    
+    // 初始加载消息
+    api.messages.getByRoom(currentRoom).then(setMessages)
+    
+    // 订阅新消息
+    const unsubscribe = api.messages.subscribe(currentRoom, (newMessage) => {
+      setMessages(prev => [...prev, newMessage])
+    })
+
+    // 清理函数
+    return () => {
+      unsubscribe()
     }
   }, [currentRoom])
 
