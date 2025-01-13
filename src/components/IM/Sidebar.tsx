@@ -18,9 +18,9 @@ export function Sidebar({ className, users = [], onAddUser, onEditUser }: Sideba
       {/* Desktop View */}
       <div className="hidden lg:block">
         <div className="mb-4 flex justify-between items-center">
-          <Text strong className="text-lg">Users</Text>
+          <Text strong className="text-lg">用户</Text>
           <Button type="primary" onClick={onAddUser} size="small">
-            + Add Role
+            + 添加角色
           </Button>
         </div>
         
@@ -61,9 +61,9 @@ export function Sidebar({ className, users = [], onAddUser, onEditUser }: Sideba
       {/* Mobile View */}
       <div className="lg:hidden">
         <div className="flex items-center justify-between mb-2">
-          <Text strong>Users</Text>
+          <Text strong>用户</Text>
           <Button type="primary" onClick={onAddUser} size="small">
-            + Add Role
+            + 添加角色
           </Button>
         </div>
         <div className="flex overflow-x-auto gap-3 pb-2">

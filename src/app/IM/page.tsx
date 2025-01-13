@@ -122,6 +122,22 @@ export default function IMPage() {
     }
   }
 
+  const handleRoomUpdate = async (roomId: string, name: string) => {
+    try {
+      const updatedRoom = await api.rooms.update(roomId, { name })
+      setRooms(prev => prev.map(room => 
+        room.id === roomId ? updatedRoom : room
+      ))
+    } catch (error) {
+      console.error('Failed to update room:', error)
+    }
+  }
+
+  const handleRoomReorder = (newRooms: Room[]) => {
+    setRooms(newRooms)
+    // 如果需要持久化排序，这里可以调用 API
+  }
+
   return (
     <Layout className="h-[90dvh]">
       <Sider width={320} theme="light" className="hidden lg:block">
@@ -156,6 +172,8 @@ export default function IMPage() {
             rooms={rooms}
             currentRoom={currentRoom}
             onRoomChange={handleRoomChange}
+            onRoomUpdate={handleRoomUpdate}
+            onRoomReorder={handleRoomReorder}
           />
           <AISelector
             className="px-4 py-2 border-b"

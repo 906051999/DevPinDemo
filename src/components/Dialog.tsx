@@ -64,7 +64,7 @@ export function Dialog({ isOpen, onClose, onSubmit, editingUser }: DialogProps) 
           />
         </Form.Item>
         {role === 'ai' && (
-          <Form.Item label="AI Prompt">
+          <Form.Item label="Prompt">
             <Input.TextArea
               value={prompt}
               onChange={(e) => setPrompt(e.target.value)}

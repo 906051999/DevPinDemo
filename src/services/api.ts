@@ -71,6 +71,14 @@ export const api = {
       const res = await fetch('/api/rooms')
       console.log(res)
       return res.json()
+    },
+    update: async (id: string, data: Partial<Room>): Promise<Room> => {
+      const res = await fetch(`/api/rooms/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      })
+      return res.json()
     }
   }
 } 
