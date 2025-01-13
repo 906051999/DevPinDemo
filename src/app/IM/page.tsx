@@ -40,9 +40,6 @@ export default function IMPage() {
         if (roomsData?.length > 0) {
           setCurrentRoom(roomsData[0].id)
         }
-        if (usersData?.length > 0) {
-          setCurrentUser(usersData[0].id)
-        }
       } catch (error) {
         console.error('Failed to fetch initial data:', error)
         setUsers([])
@@ -116,7 +113,7 @@ export default function IMPage() {
 
   return (
     <Layout className="h-[90dvh]">
-      <Sider width={320} theme="light">
+      <Sider width={320} theme="light" className="hidden lg:block">
         <Sidebar 
           users={users}
           onAddUser={() => {
@@ -130,7 +127,20 @@ export default function IMPage() {
         />
       </Sider>
       <Content>
-        <Layout className="h-full">
+        <Layout className="h-full relative">
+          <div className="lg:hidden">
+            <Sidebar 
+              users={users}
+              onAddUser={() => {
+                setEditingUser(null)
+                setIsAddUserOpen(true)
+              }}
+              onEditUser={(user) => {
+                setEditingUser(user)
+                setIsAddUserOpen(true)
+              }}
+            />
+          </div>
           <RoomTabs
             rooms={rooms}
             currentRoom={currentRoom}
@@ -144,14 +154,14 @@ export default function IMPage() {
             onChange={setSelectedAIs}
             onConfigChange={setAIConfig}
           />
-          <Content className="overflow-y-auto">
+          <Content className="overflow-y-auto pb-24">
             <ChatContent 
               messages={messages}
               users={users}
             />
           </Content>
           <MessageInput 
-            className="p-4"
+            className="absolute bottom-0 left-0 right-0 border-t p-4"
             onSendMessage={handleSendMessage}
             users={users}
             currentUser={currentUser}

@@ -24,7 +24,7 @@ export function MessageInput({ className, onSendMessage, users, currentUser, onU
         label: (
           <Avatar 
             src={user.avatar} 
-            className={currentUser === user.id ? 'ring-2 ring-blue-400' : ''}
+            className={`hover:ring-2 hover:ring-blue-400 ${currentUser === user.id ? 'ring-2 ring-blue-400' : ''}`}
           >
             {user.name[0]}
           </Avatar>
@@ -37,13 +37,20 @@ export function MessageInput({ className, onSendMessage, users, currentUser, onU
     <div className={className}>
       <div className="flex gap-2 items-center">
         <Dropdown menu={userMenu} trigger={['click']}>
-          <Avatar src={currentUserData?.avatar} className="cursor-pointer">
-            {currentUserData?.name?.[0] || 'R'}
+          <Avatar 
+            src={currentUserData?.avatar} 
+            className="cursor-pointer hover:ring-2 hover:ring-blue-400"
+          >
+            {currentUser ? currentUserData?.name?.[0] : '?'}
           </Avatar>
         </Dropdown>
         
         <Input.Search
           value={message}
+          count={{
+            show: true,
+          }}
+          
           onChange={(e) => setMessage(e.target.value)}
           placeholder={currentUser ? "输入消息..." : "请先选择角色..."}
           disabled={!currentUser}
