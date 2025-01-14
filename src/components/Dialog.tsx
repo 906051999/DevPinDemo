@@ -2,7 +2,8 @@
 
 import { useState, useEffect } from 'react'
 import { User } from '@/types'
-import { Modal, Input, Select, Form } from 'antd'
+import { Modal, Input, Select, Form, Button, Space } from 'antd'
+import { fakerZH_CN, fakerEN } from '@faker-js/faker'
 
 interface DialogProps {
   isOpen: boolean
@@ -29,16 +30,24 @@ export function Dialog({ isOpen, onClose, onSubmit, editingUser }: DialogProps) 
   }, [editingUser])
 
   const handleSubmit = () => {
-    const avatar = editingUser?.avatar || `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(name)}`
+    const avatar = `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(name)}`
     onSubmit({ name, avatar, role, ...(role === 'ai' ? { prompt } : {}) })
     setName('')
     setRole('user')
     setPrompt('')
   }
 
+  const generateRandomName = (type: 'zh' | 'en') => {
+    if (type === 'zh') {
+      setName(fakerZH_CN.person.lastName() + fakerZH_CN.person.firstName())
+    } else {
+      setName(fakerEN.person.firstName())
+    }
+  }
+
   return (
     <Modal
-      title={editingUser ? '编辑角色' : '添加新角色'}
+      title={editingUser ? '编辑面具' : '添加新面具'}
       open={isOpen}
       onCancel={onClose}
       onOk={handleSubmit}
@@ -47,13 +56,23 @@ export function Dialog({ isOpen, onClose, onSubmit, editingUser }: DialogProps) 
     >
       <Form layout="vertical">
         <Form.Item label="名称">
-          <Input
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            placeholder="角色名称..."
-          />
+          <Space direction="vertical" style={{ width: '100%' }}>
+            <Input
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder="面具名称..."
+            />
+            <Space>
+              <Button size="small" onClick={() => generateRandomName('zh')}>
+                随机中文名
+              </Button>
+              <Button size="small" onClick={() => generateRandomName('en')}>
+                随机英文名
+              </Button>
+            </Space>
+          </Space>
         </Form.Item>
-        <Form.Item label="角色类型">
+        <Form.Item label="面具类型">
           <Select
             value={role}
             onChange={(value) => setRole(value)}

@@ -52,7 +52,7 @@ export function MessageInput({ className, onSendMessage, users, currentUser, onU
           }}
           
           onChange={(e) => setMessage(e.target.value)}
-          placeholder={currentUser ? "输入消息..." : "请先选择角色..."}
+          placeholder={currentUser ? "输入消息..." : "请先选择面具..."}
           disabled={!currentUser}
           enterButton="发送"
           onSearch={(value) => {
